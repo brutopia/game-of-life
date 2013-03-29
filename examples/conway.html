@@ -1,0 +1,75 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <title>Conway's game of life test</title>
+    <script type="text/javascript" src="../src/gameoflife.js"></script>
+    <script type="text/javascript" src="../src/visualgameoflife.js"></script>
+    <style type="text/css">
+      body
+      {
+        background-color: #171736;
+        color: rgb(200,200,0);
+      }
+      canvas
+      {
+        float: left;
+        border:1px solid;
+        margin-right:20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Conway's Game of Life</h1>
+    <canvas id="game" width="600" height="600" >Sorry your browser does not support the HTML5 canvas element. Try downloading the latest version of the browser.</canvas>
+    <div>
+      ESC Load intro image<br/>
+      F9 Generate random board<br/>
+      Space Evolve one generation<br/>
+      Rule: <input type="text" id="rule" value="s23/b3"><br>
+      <button onclick="animationActive=!animationActive; if(animationActive){play();}">Start/Stop</button>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var canvas = document.getElementById("game");
+    var game = new VisualGameOfLife(25,25,canvas,25,1);
+    var animationActive = false;
+    
+    
+    // Progress 1 when space is pressed
+    window.onkeydown = function(evt) {
+      var canvas = document.getElementById("game");
+      if (evt.keyCode === 120){ // F9
+        game.clear();
+        game.randomize();
+        game.draw();
+        console.log("Generating random board");
+      }
+      if (evt.keyCode === 27){ // Esc
+        game.loadImage('title.png');
+        game.clear();
+        cellsize = Math.floor(canvas.width/game.board.length)-1;
+        game.draw();
+        console.log("Loading start image");
+      }
+      if (evt.keyCode === 32) { // Space
+        game.evolve();
+        game.clear();
+        game.draw();
+        console.log("Evolving");
+      }
+    };
+
+    function play(){
+      game.rules.parse(document.getElementById("rule").value);
+      var canvas = document.getElementById("game");
+      board = game.evolve(board);
+      game.clear();
+      game.draw();
+      if(animationActive){
+        setTimeout('play()', 100);
+      }
+    }
+  </script>
+</html>
