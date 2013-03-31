@@ -7,6 +7,8 @@ function VisualGameOfLife(width, height, canvasElement, cellsize, padding){
   var palette = ['#CC0C39', '#E6781E', '#C8CF02','#F8FCC1','#1693A7']
   
   var canvas;
+  that.__defineGetter__("canvas", function(){return canvas});
+
   if(canvasElement === undefined){
     canvas = createCanvas();
   }
@@ -16,14 +18,15 @@ function VisualGameOfLife(width, height, canvasElement, cellsize, padding){
 
   // Choose color to draw from palette
   function selectColor(generation){
-    if((generation-1) > (palette.length-1)){
+    if((generation) > (palette.length-1)){
       return palette[palette.length-1];
     }
     else{
-      return palette[generation-1];
+      return palette[generation];
     }
   }
 
+  // Creates a new canvas element of the right dimensions for us
   function createCanvas(){
     var c =  document.createElement('canvas');
     c.width = (width * cellsize) + ((1 + width) * padding);
@@ -38,7 +41,7 @@ function VisualGameOfLife(width, height, canvasElement, cellsize, padding){
     for(var x=0;x<width;x++){
       for(var y=0;y<height;y++){
         if(that.board[x][y].alive){
-          context.fillStyle = that.board[x][y].color;
+          context.fillStyle = selectColor(that.board[x][y].generation);
           context.fillRect(1+x*cellsize + x, 1+y*cellsize + y, cellsize, cellsize);
         }
       }
@@ -52,23 +55,26 @@ function VisualGameOfLife(width, height, canvasElement, cellsize, padding){
     var img=new Image();
     img.src=file;
     context.drawImage(img,0,0);
-    var data = context.getImageData(0,0,img.width-1,img.height-1).data;
+    var data = context.getImageData(0,0,img.width,img.height).data;
 
     var newBoard = [];
     for(var x=0;x<img.width;x++){
       newBoard[x] = [];
       for(var y=0;y<img.height;y++){
-        var offset = (x + y*img.width)*2;
-        if(data[offset] > 100){ // && data[offset+1] > 100 || data[offset+2]>0 ){
-          newBoard[x][y] = new Cell(true);
+        var offset = (x + y*img.width)*4;
+        if(data[offset] > 0 || data[offset+1] > 0 || data[offset+2] > 0 ){
+          newBoard[x][y] = true;
         }
         else{
-          newBoard[x][y] = new Cell(false);
+          newBoard[x][y] = false;
         }
-        newBoard[x][y].color = 'rgb(' +data[offset]+ ',' +data[offset+1]+ ',' +data[offset+2]+ ')'
       }
     }
     that.board = newBoard;
+    width = img.width;
+    height = img.height;
+    canvas = createCanvas();
+
   }
 
   // Clears the canvas

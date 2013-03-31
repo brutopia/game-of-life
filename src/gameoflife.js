@@ -34,8 +34,8 @@ function Cell(isAlive){
   this.color = '#fff';
 
   this.age = function(){generation++; lastState=alive;}
-  this.kill = function(){generation=0; alive=false;}
-  this.spawn = function(){generation=0; alive=true;}
+  this.kill = function(){generation=-1; alive=false;}
+  this.spawn = function(){generation=-1; alive=true;}
 };
 
 // Our cellular automata rules (s23/b2 by default)
@@ -82,7 +82,7 @@ function GameOfLife(width, height){
   
   // Encapsulated properties
   this.__defineGetter__("rules", function(){return rules});
-  this.__defineGetter__("currentGeneration", function(){return rules});
+  this.__defineGetter__("generation", function(){return currentGeneration});
 
   // Encapsulated board
   this.__defineGetter__("board", function(){

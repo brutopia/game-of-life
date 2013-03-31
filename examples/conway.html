@@ -22,7 +22,10 @@
   </head>
   <body>
     <h1>Conway's Game of Life</h1>
-    <canvas id="game" width="600" height="600" >Sorry your browser does not support the HTML5 canvas element. Try downloading the latest version of the browser.</canvas>
+    
+    <div id="game_area">
+    </div>
+
     <div>
       ESC Load intro image<br/>
       F9 Generate random board<br/>
@@ -32,8 +35,10 @@
     </div>
   </body>
   <script type="text/javascript">
-    var canvas = document.getElementById("game");
-    var game = new VisualGameOfLife(25,25,canvas,25,1);
+    var game = new VisualGameOfLife(45,25,undefined,4,1);
+    // game.loadImage('title.png');
+    game.draw();
+    document.getElementById('game_area').appendChild(game.canvas);
     var animationActive = false;
     
     
@@ -41,30 +46,26 @@
     window.onkeydown = function(evt) {
       var canvas = document.getElementById("game");
       if (evt.keyCode === 120){ // F9
-        game.clear();
         game.randomize();
+        game.clear();
         game.draw();
-        console.log("Generating random board");
       }
       if (evt.keyCode === 27){ // Esc
-        game.loadImage('title.png');
         game.clear();
-        cellsize = Math.floor(canvas.width/game.board.length)-1;
+        game.loadImage('title.png');
         game.draw();
-        console.log("Loading start image");
+        document.getElementById('game_area').appendChild(game.canvas);
       }
       if (evt.keyCode === 32) { // Space
         game.evolve();
         game.clear();
         game.draw();
-        console.log("Evolving");
       }
     };
 
     function play(){
       game.rules.parse(document.getElementById("rule").value);
-      var canvas = document.getElementById("game");
-      board = game.evolve(board);
+      game.evolve();
       game.clear();
       game.draw();
       if(animationActive){
